@@ -1,0 +1,10 @@
+[
+  {
+    "id": 0,
+    "name": "Clique clinic",
+    "picture": "images/clinic_3.jpg",
+    "price": 10,
+    "status": "Avaiable",
+    "location": "Japan"
+  }
+]

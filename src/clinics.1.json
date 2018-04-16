@@ -1,0 +1,26 @@
+[
+  {
+    "id": 0,
+    "name": "Smart clinics",
+    "picture": "images/clinic_1.jpg",
+    "price": 10.99,
+    "status": "Available",
+    "location": "USA"
+  },
+  {
+    "id": 1,
+    "name": "White clinic",
+    "picture": "images/clinic_2.jpg",
+    "price": 9.99,
+    "status": "Available",
+    "location": "Russia"
+  },
+  {
+    "id": 2,
+    "name": "Clique clinic",
+    "picture": "images/clinic_3.jpg",
+    "price": 12,
+    "status": "Closed",
+    "location": "Japan"
+  }
+]
