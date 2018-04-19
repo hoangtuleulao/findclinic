@@ -27,11 +27,11 @@ contract ContractCP {
     bool private _insurerPaid;
     uint private _insurerPaidAmount;
     
-    mapping(string => Item) _availableItems;
-    mapping(string => Item) _selectedItem;
+    mapping(uint => Item) _availableItems;
+    mapping(uint => Item) _selectedItem;
     
-    function ContractCP(address inClinic, address inPatient, uint[] inCheckItems) {
-        //require(inCheckItems.length > 0);
+    function ContractCP(address inClinic, address inPatient, uint[] inCheckItems) public {
+        require(inCheckItems.length > 0);
         _clinic = inClinic;
         _patient = inPatient;
         _status = Status.NEW;
@@ -39,25 +39,39 @@ contract ContractCP {
         // TODO
         // Init _availableItems as available services at Clinic
         // Stomache, General, Blood, Head, Heart?
-        
-        // for(uint i = 0; i < inCheckItems.length; i++) {
-        //     Item foundItem = _availableItems[inCheckItems[i]];
-        //     if(foundItem.isValid == false) {
-        //         throw;
-        //     }
-        //     _selectedItem[inCheckItems[i]] = foundItem;
-        //     _totalFee += foundItem.price;
-        // }
+        temporaryAvaliableItems();
+
+        for(uint i = 0; i < inCheckItems.length; i++) {
+            Item storage foundItem = _availableItems[inCheckItems[i]];
+            if(foundItem.isValid == false) {
+                revert();
+            }
+            _selectedItem[inCheckItems[i]] = foundItem;
+            _totalFee += foundItem.price;
+        }
+    }
+
+    function temporaryAvaliableItems() private {
+        _availableItems[0] = Item({name: "item 01", price: 1, isValid: true});
+        _availableItems[1] = Item({name: "item 02", price: 2, isValid: true});
+        _availableItems[2] = Item({name: "item 03", price: 3, isValid: true});
+        _availableItems[3] = Item({name: "item 04", price: 4, isValid: true});
+        _availableItems[4] = Item({name: "item 05", price: 5, isValid: true});
+        _availableItems[5] = Item({name: "item 06", price: 6, isValid: true});
+        _availableItems[6] = Item({name: "item 07", price: 7, isValid: true});
+        _availableItems[7] = Item({name: "item 08", price: 8, isValid: true});
+        _availableItems[8] = Item({name: "item 09", price: 9, isValid: true});
+        _availableItems[9] = Item({name: "item 10", price: 9, isValid: false});
     }
     
-    function clinicAcceptPatient(address inContractPI) {
+    function clinicAcceptPatient(address inContractPI) public {
         require(msg.sender == _clinic);
         require(_status == Status.NEW);
         _contractPI = inContractPI;
         _status = Status.WAITING_FOR_PAID;
     }
     
-    function calculateFee() returns (uint, uint) {
+    function calculateFee() public returns (uint, uint) {
         require(msg.sender == _clinic);
         require(_status == Status.WAITING_FOR_PAID);
         ContractPI pi = ContractPI(_contractPI);
@@ -70,7 +84,7 @@ contract ContractCP {
         return (pays[0], pays[1]);
     }
     
-    function patientPay() payable {
+    function patientPay() public payable {
         require(msg.sender == _patient);
         require(_status == Status.WAITING_FOR_PAID);
         require(_patientPaidAmount > 0);
@@ -82,7 +96,7 @@ contract ContractCP {
         checkForPay();
     }
     
-    function insurerPay() payable {
+    function insurerPay() public payable {
         require(_status == Status.WAITING_FOR_PAID);
         require(_insurerPaidAmount > 0);
         require(_insurerPaid == false);
@@ -149,16 +163,5 @@ contract ContractCP {
     event InsurerPaid(uint);
     
     event ReadyToCheck();
-    
-    // function stringToBytes32(string memory source) returns (bytes32 result) {
-    //     bytes memory tempEmptyStringTest = bytes(source);
-    //     if (tempEmptyStringTest.length == 0) {
-    //         return 0x0;
-    //     }
-    
-    //     assembly {
-    //         result := mload(add(source, 32))
-    //     }
-    // }
     
 }
