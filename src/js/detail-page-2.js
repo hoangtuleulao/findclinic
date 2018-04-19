@@ -5,17 +5,17 @@ App = {
   init: function() {
     // Currently, these accounts are holding in source code
     // They should be hold in database system.
-    patientAcc = "0xf17f52151EbEF6C7334FAD080c5704D77216b732";
-    clinicAcc = "0xC5fdf4076b8F3A5357c5E395ab970B5B54098Fef";
+    patientAcc = "0xf17f52151EbEF6C7334FAD080c5704D77216b732"; // patient account
+    clinicAcc = "0xC5fdf4076b8F3A5357c5E395ab970B5B54098Fef"; // clinic account
 
     // Init the web3
     App.initWeb3();
 
     // Init account watcher (display balance)
-    App.initAccWatcher();
+    App.initAccountWatcher();
 
     // Init contract setting(provider)
-    //App.initContract();
+    App.initContract();
   
     // Init action listener for buttons
     App.bindEvents();
@@ -30,11 +30,9 @@ App = {
       App.web3Provider = new Web3.providers.HttpProvider('http://localhost:8545');
     }
     web3 = new Web3(App.web3Provider);
-
-    //return App.initContract();
   },
 
-  initAccWatcher: function() {
+  initAccountWatcher: function() {
     // Retrieve balance
     App.notifyUpdateUserBalance();
 
@@ -60,7 +58,7 @@ App = {
         var balanceInWei = bal;
         var balanceInEther = web3.fromWei(bal, "ether");
         console.log(`Balance [${patientAcc}]: ${web3.fromWei(bal, "ether")}`);
-        $('#user-balance').text(balanceInEther + ' ether').attr('value', bal);
+        $('#user-balance').text(balanceInEther + ' ETH').attr('value', bal);
 
         $('#user-balance-loader').hide();
         $('#user-balance').show();
@@ -89,28 +87,21 @@ App = {
 
   bookNow: function(event) {
     event.preventDefault();
-    web3.eth.getAccounts(function(error, accounts) {
-      if (error) {
-        console.log(error);
-      }
 
-      var account = accounts[0];
+    App.contracts.ContractCPList.deployed().then(function(instance) {
+      instance.CreateContractEvent().watch((err, res) => {
+        if (err) console.log(err);
+        console.log('contract address', res.message);
+      });
 
-      App.contracts.ContractCPList.deployed().then(function(instance) {
-        instance.CreateContractEvent().watch((err, res) => {
-          if (err) console.log(err);
-          console.log('contract address', res.message);
-      });
-        console.log("accounts[0] = " + accounts[0]);
-        console.log("clinicAcc = " + clinicAcc);
-        console.log("patientAcc = " + patientAcc);
-        //  function createContract(address inClinic, address inPatient, string[] inCheckItems) {
-        return instance.createContract(clinicAcc, patientAcc, ["Noi khoa", "Rang"] , {from: patientAcc});
-      }).then(function(result) {
-        console.log("createContract is called");
-      }).catch(function(err) {
-        console.log(err.message);
-      });
+      console.log("clinicAcc = " + clinicAcc);
+      console.log("patientAcc = " + patientAcc);
+
+      return instance.createContract(clinicAcc, patientAcc,"Rang", {from: patientAcc});
+    }).then(function(result) {
+      console.log("createContract is called");
+    }).catch(function(err) {
+      console.log(err.message);
     });
   }
 }
