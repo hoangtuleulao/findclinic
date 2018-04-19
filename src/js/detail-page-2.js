@@ -5,8 +5,8 @@ App = {
   init: function() {
     // Currently, these accounts are holding in source code
     // They should be hold in database system.
-    patientAcc = "0xf17f52151EbEF6C7334FAD080c5704D77216b732"; // patient account
-    clinicAcc = "0xC5fdf4076b8F3A5357c5E395ab970B5B54098Fef"; // clinic account
+    patientAcc = "0xf17f52151EbEF6C7334FAD080c5704D77216b732";
+    clinicAcc = "0xC5fdf4076b8F3A5357c5E395ab970B5B54098Fef";
 
     // Init the web3
     App.initWeb3();
@@ -89,15 +89,16 @@ App = {
     event.preventDefault();
 
     App.contracts.ContractCPList.deployed().then(function(instance) {
-      instance.CreateContractEvent().watch((err, res) => {
-        if (err) console.log(err);
-        console.log('contract address', res.message);
-      });
+      // instance.CreateContractEvent().watch((err, res) => {
+      //   if (err) console.log(err);
+      //   console.log('contract address', res.message);
+      // });
 
       console.log("clinicAcc = " + clinicAcc);
       console.log("patientAcc = " + patientAcc);
 
-      return instance.createContract(clinicAcc, patientAcc,"Rang", {from: patientAcc});
+      //return instance.createContract(clinicAcc, patientAcc, [1,2,3], {from: patientAcc});
+      return instance.createContract("0xC5fdf4076b8F3A5357c5E395ab970B5B54098Fef", "0xf17f52151EbEF6C7334FAD080c5704D77216b732", ["1","2","3"]);
     }).then(function(result) {
       console.log("createContract is called");
     }).catch(function(err) {

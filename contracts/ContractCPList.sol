@@ -1,7 +1,6 @@
 pragma solidity ^0.4.21;
-//Not good support at this time
 //pragma experimental ABIEncoderV2;
-//import "./ContractCP.sol";
+import "./ContractCP.sol";
 
 /**
  * This contract manages all contracts of Patient & Clinic
@@ -11,9 +10,6 @@ contract ContractCPList {
     mapping(address => address[]) private _patientContractList;
     mapping(address => address[]) private _clinicContractList;
     
-    // Duration of implementation, we need to detect when the method is called
-    event CreateContractEvent(string message);
-
     /**
      * Create a ContractCP and save it to the list of contracts of Patient;
      * @param inClinic address of Clinic account
@@ -21,16 +17,13 @@ contract ContractCPList {
      * @param inCheckItems list of items that Patient want to check
      */
     function createContract(address inClinic, address inPatient, uint[] inCheckItems) public {
-        emit CreateContractEvent("Done");
-        //address pi = new ContractCP(inClinic, inPatient, inCheckItems);
+        address pi = new ContractCP(inClinic, inPatient, inCheckItems);
         // Add to Patient contracts list
-        //address[] storage currentContractListOfPatient = _patientContractList[inPatient];
-
-        //currentContractListOfPatient.push(pi);
+        address[] storage currentContractListOfPatient = _patientContractList[inPatient];
+        currentContractListOfPatient.push(pi);
         // Add to Clinic contracts list
-       // address[] storage currentContractListOfClinic = _clinicContractList[inClinic];
-
-        //currentContractListOfClinic.push(pi);
+        address[] storage currentContractListOfClinic = _clinicContractList[inClinic];
+        currentContractListOfClinic.push(pi);
     }
     
     /**

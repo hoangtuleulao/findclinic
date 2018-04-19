@@ -1,5 +1,5 @@
 pragma solidity ^0.4.21;
-pragma experimental ABIEncoderV2;
+//pragma experimental ABIEncoderV2;
 import "./ContractCP.sol";
 
 /**
@@ -22,7 +22,7 @@ contract ContractPI {
     struct Option {
         uint period;
         uint price;
-        mapping(string => Item) items;
+        mapping(uint => Item) items;
         bool isValid;
     }
     
@@ -108,7 +108,7 @@ contract ContractPI {
         return _insurer;
     }
     
-    function calculateClaimAmount(address inPatient, string[] inCheckItems, uint[] inCheckPrices) returns (uint) {
+    function calculateClaimAmount(address inPatient, uint[] inCheckItems, uint[] inCheckPrices) returns (uint) {
         require(_status == Status.NEW);
         require(_endDate >= now);
         uint sum = 0;
@@ -130,18 +130,18 @@ contract ContractPI {
         require(_claimQueue[inContractCP].isValid == false);
         
         uint itemCount = cp.getItemCount();
-        string[] checkItems;
-        uint[] checkPrices;
+        uint[] storage checkItems;
+        uint[] storage checkPrices;
         for(uint i = 0; i < itemCount; i++) {
-            checkItems[i] = bytes32ToString(cp.getCheckItem(i));
+            checkItems[i] = cp.getCheckItem(i);
             checkPrices[i] = cp.getCheckPrice(i);
         }
         
         uint totalAmount = calculateClaimAmount(cp.getPatient(), checkItems, checkPrices);
         if(totalAmount > 0) {
-          _claimQueue[inContractCP] = ClaimRequest(inContractCP, _patient, false, totalAmount, true);
-          emit ClaimRequested(inContractCP, _patient, totalAmount);
-          return 0;
+            _claimQueue[inContractCP] = ClaimRequest(inContractCP, _patient, false, totalAmount, true);
+            emit ClaimRequested(inContractCP, _patient, totalAmount);
+            return 0;
         }
         return 1;
         
