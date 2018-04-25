@@ -1,5 +1,4 @@
 pragma solidity ^0.4.21;
-pragma experimental ABIEncoderV2;
 import "./ContractPI.sol";
 
 
@@ -15,7 +14,7 @@ contract ContractCP {
     
     address private _clinic;
     address private _patient;
-    string[] private _checkItems;
+    uint[] private _checkItems;
     uint[] private _checkPrices;
     Status public _status;
     string private _desc;
@@ -27,10 +26,10 @@ contract ContractCP {
     bool private _insurerPaid;
     uint private _insurerPaidAmount;
     
-    mapping(string => Item) _availableItems;
-    mapping(string => Item) _selectedItem;
+    mapping(uint => Item) _availableItems;
+    mapping(uint => Item) _selectedItem;
     
-    function ContractCP(address inClinic, address inPatient, string[] inCheckItems) {
+    function ContractCP(address inClinic, address inPatient, uint[] inCheckItems) {
         require(inCheckItems.length > 0);
         _clinic = inClinic;
         _patient = inPatient;
@@ -121,8 +120,8 @@ contract ContractCP {
         return _patient;
     }
     
-    function getCheckItem(uint inIndex) view external returns (bytes32) {
-        return stringToBytes32(_checkItems[inIndex]);
+    function getCheckItem(uint inIndex) view external returns (uint) {
+        return _checkItems[inIndex];
     }
     
     function getCheckPrice(uint inIndex) view external returns (uint) {

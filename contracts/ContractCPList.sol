@@ -1,5 +1,4 @@
 pragma solidity ^0.4.21;
-pragma experimental ABIEncoderV2;
 import "./ContractCP.sol";
 
 /**
@@ -19,7 +18,7 @@ contract ContractCPList {
      * @param inPatient address of Patient account
      * @param inCheckItems list of items that Patient want to check
      */
-    function createContract(address inClinic, address inPatient, string[] inCheckItems) {
+    function createContract(address inClinic, address inPatient, uint[] inCheckItems) {
         emit CreateContractEvent("1");
         require(msg.sender == inPatient);
 
