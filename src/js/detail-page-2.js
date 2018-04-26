@@ -83,6 +83,7 @@ App = {
 
   bindEvents: function() {
     $(document).on('click', '.btn_1', App.bookNow);
+    $(document).on('click', '#reviews-tab', App.displayPayment)
   },
 
   bookNow: function(event) {
@@ -102,6 +103,20 @@ App = {
       console.log("createContract is called" + result);
     }).catch(function(err) {
       console.log(err.message);
+    });
+  },
+
+  displayPayment: function(event) {
+    event.preventDefault();
+    var lblContractAddress = $('#reviews').eq(0).find('#signed_contract_pc_address');
+    lblContractAddress.text('-');
+
+    App.contracts.ContractCPList.deployed().then(function(instance){
+      return instance.getPatientContracts.call(patientAcc);
+    }).then(function(signedContractAddress){
+      lblContractAddress.text(signedContractAddress[0]);
+    }).catch(function(err){
+      alert(err.message);
     });
   }
 }
