@@ -1,5 +1,4 @@
 pragma solidity ^0.4.21;
-//pragma experimental ABIEncoderV2;
 import "./ContractCP.sol";
 
 /**
@@ -47,5 +46,4 @@ contract ContractCPList {
     function getClinicContracts(address inClinic) public view returns (address[]) {
         return _clinicContractList[inClinic];
     }
-    
 }

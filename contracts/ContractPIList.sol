@@ -14,14 +14,14 @@ contract ContractPIList {
      * @param inInsurer address of Insurer account
      * @param inPatient address of Patient account
      */
-    function createContract(address inInsurer, address inPatient) {
+    function createContract(address inInsurer, address inPatient) public {
         require(msg.sender == inPatient);
         address pi = new ContractPI(inInsurer, inPatient);
         // Add to Patient contracts list
-        address[] currentContractListOfPatient = _patientContractList[inPatient];
+        address[] storage currentContractListOfPatient = _patientContractList[inPatient];
         currentContractListOfPatient.push(pi);
         // Add to Insurer contracts list
-        address[] currentContractListOfInsurer = _insurerContractList[inInsurer];
+        address[] storage currentContractListOfInsurer = _insurerContractList[inInsurer];
         currentContractListOfInsurer.push(pi);
     }
     
@@ -30,7 +30,7 @@ contract ContractPIList {
      * @param inPatient address of patient
      * @return address[] list of contract addresses
      */
-    function getPatientContracts(address inPatient) returns (address[]) {
+    function getPatientContracts(address inPatient) public view returns (address[]) {
         return _patientContractList[inPatient];
     }
     
@@ -39,7 +39,7 @@ contract ContractPIList {
      * @param inInsurer address of insurer
      * @return address[] list of contract addresses
      */
-    function getInsurerContracts(address inInsurer) returns (address[]) {
+    function getInsurerContracts(address inInsurer) public view returns (address[]) {
         return _insurerContractList[inInsurer];
     }
     

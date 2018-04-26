@@ -1,5 +1,4 @@
 pragma solidity ^0.4.21;
-//pragma experimental ABIEncoderV2;
 import "./ContractCP.sol";
 
 /**
@@ -14,6 +13,7 @@ contract ContractPI {
     enum Status {NEW, VALID, EXPIRED, CANCELLED}
     
     struct Item {
+        uint id;
         string name;
         uint percent;
         bool isValid;
@@ -49,21 +49,103 @@ contract ContractPI {
     mapping(uint => Option[]) _availableOptionsList;
     mapping(address => ClaimRequest) _claimQueue;
     
-    function ContractPI(address inInusrer, address inPatient) {
+    
+    Option optionG6 = Option(6, 20, true);
+    Item itemG6_1 = Item(1, "Fever", 100, true);
+    Item itemG6_2 = Item(2, "Flu", 100, true);
+    Item itemG6_3 = Item(3, "Backache", 80, true);
+    Item itemG6_4 = Item(4, "Stomach ache", 80, true);
+    Item itemG6_5 = Item(5, "Headache", 80, true);
+    Item itemG6_6 = Item(6, "Toothache", 50, true);
+    
+    Option optionG12 = Option(12, 30, true);
+    Item itemG12_1 = Item(1, "Fever", 100, true);
+    Item itemG12_2 = Item(2, "Flu", 100, true);
+    Item itemG12_3 = Item(3, "Backache", 80, true);
+    Item itemG12_4 = Item(4, "Stomach ache", 80, true);
+    Item itemG12_5 = Item(5, "Headache", 80, true);
+    Item itemG12_6 = Item(6, "Toothache", 50, true);
+    
+    Option optionP6 = Option(6, 30, true);
+    Item itemP6_1 = Item(1, "Fever", 100, true);
+    Item itemP6_2 = Item(2, "Flu", 100, true);
+    Item itemP6_3 = Item(3, "Backache", 100, true);
+    Item itemP6_4 = Item(4, "Stomach ache", 100, true);
+    Item itemP6_5 = Item(5, "Headache", 100, true);
+    Item itemP6_6 = Item(6, "Toothache", 80, true);
+    Item itemP6_7 = Item(7, "Cancer", 80, true);
+    Item itemP6_8 = Item(8, "General examination", 50, true);
+    
+    Option optionP12 = Option(12, 40, true);
+    Item itemP12_1 = Item(1, "Fever", 100, true);
+    Item itemP12_2 = Item(2, "Flu", 100, true);
+    Item itemP12_3 = Item(3, "Backache", 100, true);
+    Item itemP12_4 = Item(4, "Stomach ache", 100, true);
+    Item itemP12_5 = Item(5, "Headache", 100, true);
+    Item itemP12_6 = Item(6, "Toothache", 80, true);
+    Item itemP12_7 = Item(7, "Cancer", 80, true);
+    Item itemP12_8 = Item(8, "General examination", 50, true);
+
+    // Defining constructors as functions with the same name as the contract is deprecated.
+    // Use "constructor(...) { ... }" instead without function keyword.
+    function ContractPI(address inInusrer, address inPatient) public {
         require(msg.sender == inPatient);
         _insurer = inInusrer;
         _patient = inPatient;
         _status = Status.NEW;
         
+        // Option 1: General - 6 months
+        optionG6.items[1] = itemG6_1;
+        optionG6.items[2] = itemG6_2;
+        optionG6.items[3] = itemG6_3;
+		optionG6.items[4] = itemG6_4;
+		optionG6.items[5] = itemG6_5;
+		optionG6.items[6] = itemG6_6;
+		
+		// Option 1: General - 12 months
+        optionG12.items[1] = itemG12_1;
+        optionG12.items[2] = itemG12_2;
+        optionG12.items[3] = itemG12_3;
+		optionG12.items[4] = itemG12_4;
+		optionG12.items[5] = itemG12_5;
+		optionG12.items[6] = itemG12_6;
+
+        Option[] storage generalOptions;
+        generalOptions.push(optionG6);
+		generalOptions.push(optionG12);
+        _availableOptionsList[1] = generalOptions;
         
-        // TODO
-        // Init _availableOptionsList as avaiable service packs at Insurer
-        // Pack 1: 6 month, {Head, Stomache, ..} 50 ETH
-        // Pack 2: ...
+        // Option 2: Premium - 6 months
+        optionP6.items[1] = itemP6_1;
+        optionP6.items[2] = itemP6_2;
+        optionP6.items[3] = itemP6_3;
+		optionP6.items[4] = itemP6_4;
+		optionP6.items[5] = itemP6_5;
+		optionP6.items[6] = itemP6_6;
+		optionP6.items[7] = itemP6_7;
+		optionP6.items[8] = itemP6_8;
+		
+		// Option 2: Premium - 12 months
+        optionP12.items[1] = itemP12_1;
+        optionP12.items[2] = itemP12_2;
+        optionP12.items[3] = itemP12_3;
+		optionP12.items[4] = itemP12_4;
+		optionP12.items[5] = itemP12_5;
+		optionP12.items[6] = itemP12_6;
+		optionP12.items[7] = itemP12_7;
+		optionP12.items[8] = itemP12_8;
+        
+        Option[] storage premiumOptions;
+        premiumOptions.push(optionP6);
+		premiumOptions.push(optionP12);
+        _availableOptionsList[2] = premiumOptions;
+        
     }
     
-    function getOption(uint inPackId, uint inNumberOfMonths) internal returns (Option) {
-        Option[] optionsForPack = _availableOptionsList[inPackId];
+    function getOption(uint inPackId, uint inNumberOfMonths) internal view returns (Option) {
+        // Variable is declared as a storage pointer.
+        // Use an explicit "storage" keyword to silence this warning.
+        Option[] memory optionsForPack = _availableOptionsList[inPackId];
         for (uint i = 0; i < optionsForPack.length; i++) {
             if(optionsForPack[i].period == inNumberOfMonths) {
                 return optionsForPack[i];
@@ -71,7 +153,7 @@ contract ContractPI {
         }
     }
     
-    function calculateContractValue(uint inPackId, uint inNumberOfMonths) returns (uint) {
+    function calculateContractValue(uint inPackId, uint inNumberOfMonths) public view returns (uint) {
         Option memory matchedOption = getOption(inPackId, inNumberOfMonths);
         if(matchedOption.isValid) {
             return matchedOption.price;
@@ -79,7 +161,7 @@ contract ContractPI {
         return 0;
     }
     
-    function patientConfirm(uint inPackId, uint inNumberOfMonths, uint inStartDate, uint inContractValue) payable minimumAmount(inContractValue) {
+    function patientConfirm(uint inPackId, uint inNumberOfMonths, uint inStartDate, uint inContractValue) public payable minimumAmount(inContractValue) {
         require(msg.sender == _patient);
         uint totalContractValue = calculateContractValue(inPackId, inNumberOfMonths);
         require(totalContractValue > 0);
@@ -98,22 +180,25 @@ contract ContractPI {
         
     }
     
-    function patientCancel() {
+    function patientCancel() public {
         require(msg.sender == _patient);
         require(_status == Status.NEW);
-        suicide(msg.sender);
+        // "suicide" has been deprecated in favour of "selfdestruct"
+        selfdestruct(msg.sender);
     }
     
-    function getInsurer() returns(address) {
+    function getInsurer() public view returns(address) {
         return _insurer;
     }
     
-    function calculateClaimAmount(address inPatient, uint[] inCheckItems, uint[] inCheckPrices) returns (uint) {
+    function calculateClaimAmount(address inPatient, uint[] inCheckItems, uint[] inCheckPrices) public view returns (uint) {
         require(_status == Status.NEW);
         require(_endDate >= now);
         uint sum = 0;
         for(uint i = 0; i < inCheckItems.length; i++) {
-            Item matchedItem = _selectedOption.items[inCheckItems[i]];
+            // Variable is declared as a storage pointer.
+            // Use an explicit "storage" keyword to silence this warning.
+            Item storage matchedItem = _selectedOption.items[inCheckItems[i]];
             if(matchedItem.isValid) {
                 sum += matchedItem.percent * inCheckPrices[i] / 100;
             }
@@ -121,7 +206,7 @@ contract ContractPI {
         return sum;
     }
     
-    function requestForClaim(address inContractCP) returns (uint) {
+    function requestForClaim(address inContractCP) public returns (uint) {
         require(_status == Status.VALID);
         require(_endDate >= now);
         
@@ -130,6 +215,7 @@ contract ContractPI {
         require(_claimQueue[inContractCP].isValid == false);
         
         uint itemCount = cp.getItemCount();
+        //Uninitialized storage pointer.
         uint[] storage checkItems;
         uint[] storage checkPrices;
         for(uint i = 0; i < itemCount; i++) {
@@ -147,29 +233,34 @@ contract ContractPI {
         
     }
     
-    function insurerAcceptClaim(address inContractCP) payable {
+    function insurerAcceptClaim(address inContractCP) public payable {
         require(msg.sender == _insurer);
         require(_status == Status.VALID);
-        ClaimRequest request = _claimQueue[inContractCP];
+        // Variable is declared as a storage pointer.
+        // Use an explicit "storage" keyword to silence this warning.
+        ClaimRequest storage request = _claimQueue[inContractCP];
         require(request.isValid);
         require(request.paid == false);
         require(msg.value >= request.amount);
         ContractCP cp = ContractCP(inContractCP);
+        // Member "receive" not found or not visible
+        // after argument-dependent lookup in contract ContractCP
         cp.receive.gas(300000).value(request.amount)(request.amount);
         request.paid = true;
         
         emit AcceptClaim(inContractCP, _patient, request.amount);
     }
     
-    function requestForWithdraw() payable {
+    function requestForWithdraw() public payable {
         require(msg.sender == _insurer);
         require(_status == Status.VALID);
         require(_endDate < now);
         _status = Status.EXPIRED;
-        msg.sender.transfer(this.balance);
+        msg.sender.transfer(address(this).balance);
     }
     
-    function monthToMiliseconds(uint inMonth) internal returns (uint) {
+    // Function state mutability can be restricted to pure
+    function monthToMiliseconds(uint inMonth) internal pure returns (uint) {
         uint daysPerMonth = 30;
         uint hoursPerDay = 24;
         uint minsPerHour = 60;
@@ -190,35 +281,25 @@ contract ContractPI {
     
     event AcceptClaim(address, address, uint);
     
-//    /**
-//      * Convert bytes32 to string
-//      * @param x The bytes32 value
-//      * @return string The resulting string from bytes32
-//      */
-//     function bytes32ToString(bytes32 x) constant returns (string) {
-//         bytes memory bytesString = new bytes(32);
-//         uint charCount = 0;
-//         for (uint j = 0; j < 32; j++) {
-//             byte char = byte(bytes32(uint(x) * 2 ** (8 * j)));
-//             if (char != 0) {
-//                 bytesString[charCount] = char;
-//                 charCount++;
-//             }
-//         }
-//         bytes memory bytesStringTrimmed = new bytes(charCount);
-//         for (j = 0; j < charCount; j++) {
-//             bytesStringTrimmed[j] = bytesString[j];
-//         }
-//         return string(bytesStringTrimmed);
-//     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+   /**
+     * Convert bytes32 to string
+     * @param x The bytes32 value
+     * @return string The resulting string from bytes32
+     */
+    function bytes32ToString(bytes32 x) public pure returns (string) {
+        bytes memory bytesString = new bytes(32);
+        uint charCount = 0;
+        for (uint j = 0; j < 32; j++) {
+            byte char = byte(bytes32(uint(x) * 2 ** (8 * j)));
+            if (char != 0) {
+                bytesString[charCount] = char;
+                charCount++;
+            }
+        }
+        bytes memory bytesStringTrimmed = new bytes(charCount);
+        for (j = 0; j < charCount; j++) {
+            bytesStringTrimmed[j] = bytesString[j];
+        }
+        return string(bytesStringTrimmed);
+    }
 }

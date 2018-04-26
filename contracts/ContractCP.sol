@@ -1,5 +1,4 @@
 pragma solidity ^0.4.21;
-//pragma experimental ABIEncoderV2;
 import "./ContractPI.sol";
 
 
@@ -8,6 +7,7 @@ contract ContractCP {
     enum Status {NEW, WAITING_FOR_PAID, CHECKING, DONE, CANCELLED}
     
     struct Item {
+        uint id;
         string name;
         uint price;
         bool isValid;
@@ -36,12 +36,42 @@ contract ContractCP {
         _patient = inPatient;
         _status = Status.NEW;
         
-        // TODO
-        // Init _availableItems as available services at Clinic
-        // Stomache, General, Blood, Head, Heart?
-        temporaryAvaliableItems();
-
+        {
+            Item memory item1 = Item(1, "Fever", 1, true);
+            _availableItems[1] = item1;
+        }
+        {
+            Item memory item2 = Item(2, "Flu", 1, true);
+            _availableItems[2] = item2;
+        }
+        {
+            Item memory item3 = Item(3, "Backache", 2, true);
+            _availableItems[3] = item3;
+        }
+		{
+            Item memory item4 = Item(4, "Stomach ache", 2, true);
+            _availableItems[4] = item4;
+        }
+		{
+            Item memory item5 = Item(5, "Headache", 3, true);
+            _availableItems[5] = item5;
+        }
+		{
+            Item memory item6 = Item(6, "Toothache", 3, true);
+            _availableItems[6] = item6;
+        }
+		{
+            Item memory item7 = Item(7, "Cancer", 10, true);
+            _availableItems[7] = item7;
+        }
+		{
+            Item memory item8 = Item(8, "General examination", 5, true);
+            _availableItems[8] = item8;
+        }
+        
         for(uint i = 0; i < inCheckItems.length; i++) {
+            // Variable is declared as a storage pointer.
+            // Use an explicit "storage" keyword to silence this warning.
             Item storage foundItem = _availableItems[inCheckItems[i]];
             if(foundItem.isValid == false) {
                 revert();
@@ -49,19 +79,6 @@ contract ContractCP {
             _selectedItem[inCheckItems[i]] = foundItem;
             _totalFee += foundItem.price;
         }
-    }
-
-    function temporaryAvaliableItems() private {
-        _availableItems[0] = Item({name: "item 01", price: 1, isValid: true});
-        _availableItems[1] = Item({name: "item 02", price: 2, isValid: true});
-        _availableItems[2] = Item({name: "item 03", price: 3, isValid: true});
-        _availableItems[3] = Item({name: "item 04", price: 4, isValid: true});
-        _availableItems[4] = Item({name: "item 05", price: 5, isValid: true});
-        _availableItems[5] = Item({name: "item 06", price: 6, isValid: true});
-        _availableItems[6] = Item({name: "item 07", price: 7, isValid: true});
-        _availableItems[7] = Item({name: "item 08", price: 8, isValid: true});
-        _availableItems[8] = Item({name: "item 09", price: 9, isValid: true});
-        _availableItems[9] = Item({name: "item 10", price: 9, isValid: false});
     }
     
     function clinicAcceptPatient(address inContractPI) public {
@@ -71,11 +88,12 @@ contract ContractCP {
         _status = Status.WAITING_FOR_PAID;
     }
     
-    function calculateFee() public returns (uint, uint) {
+    function calculateFee() public returns (uint, uint){
         require(msg.sender == _clinic);
         require(_status == Status.WAITING_FOR_PAID);
         ContractPI pi = ContractPI(_contractPI);
-        uint[] pays;
+        // Intial as memory array 2 items in memory
+        uint[] memory pays = new uint[](2); 
         pays[0] = pi.requestForClaim(this);
         pays[1] = _totalFee - pays[0];
         
@@ -109,7 +127,7 @@ contract ContractCP {
         checkForPay();
     }
     
-    function checkForPay() {
+    function checkForPay() public {
         require(_status == Status.WAITING_FOR_PAID);
         require(_insurerPaidAmount == 0 || _insurerPaid);
         require(_patientPaidAmount == 0 || _patientPaid);
@@ -117,18 +135,23 @@ contract ContractCP {
         emit ReadyToCheck();
     }
     
-    function patientConfirm() payable {
+    function patientConfirm() public payable {
         require(msg.sender == _patient);
         require(_status == Status.CHECKING);
-        _clinic.transfer(this.balance);
+        // Using contract member "balance" inherited from the address type is deprecated.
+        // Convert the contract to "address" type to access the member,
+        // for example use "address(contract).balance" instead.
+        //_clinic.transfer(this.balance);
+        _clinic.transfer(address(this).balance);
         _status = Status.DONE;
     }
     
-    function patientCancel() {
+    function patientCancel() public{
         require(msg.sender == _patient);
         require(_status == Status.NEW);
         _status = Status.CANCELLED;
-        suicide(msg.sender);
+        // deprecated-suicide: 'suicide' is deprecated. Use 'selfdestruct' instead.
+        selfdestruct(msg.sender);
     }
     
     function getPatient() view external returns (address) {
@@ -147,8 +170,8 @@ contract ContractCP {
         return _checkItems.length;
     }
     
-    function receive(uint inAmount) payable minimumAmount(inAmount) {
-        
+    function receive(uint inAmount) public payable minimumAmount(inAmount) {
+        // Just for checking the minimum amount
     }
     
     modifier minimumAmount(uint inEtherAmount) {
@@ -163,5 +186,16 @@ contract ContractCP {
     event InsurerPaid(uint);
     
     event ReadyToCheck();
+    
+    function stringToBytes32(string memory source) public pure returns (bytes32 result) {
+        bytes memory tempEmptyStringTest = bytes(source);
+        if (tempEmptyStringTest.length == 0) {
+            return 0x0;
+        }
+    
+        assembly {
+            result := mload(add(source, 32))
+        }
+    }
     
 }
