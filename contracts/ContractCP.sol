@@ -7,6 +7,7 @@ contract ContractCP {
     enum Status {NEW, WAITING_FOR_PAID, CHECKING, DONE, CANCELLED}
     
     struct Item {
+        uint id;
         string name;
         uint price;
         bool isValid;
@@ -35,9 +36,38 @@ contract ContractCP {
         _patient = inPatient;
         _status = Status.NEW;
         
-        // TODO
-        // Init _availableItems as available services at Clinic
-        // Stomache, General, Blood, Head, Heart?
+        {
+            Item memory item1 = Item(1, "Fever", 1, true);
+            _availableItems[1] = item1;
+        }
+        {
+            Item memory item2 = Item(2, "Flu", 1, true);
+            _availableItems[2] = item2;
+        }
+        {
+            Item memory item3 = Item(3, "Backache", 2, true);
+            _availableItems[3] = item3;
+        }
+		{
+            Item memory item4 = Item(4, "Stomach ache", 2, true);
+            _availableItems[4] = item4;
+        }
+		{
+            Item memory item5 = Item(5, "Headache", 3, true);
+            _availableItems[5] = item5;
+        }
+		{
+            Item memory item6 = Item(6, "Toothache", 3, true);
+            _availableItems[6] = item6;
+        }
+		{
+            Item memory item7 = Item(7, "Cancer", 10, true);
+            _availableItems[7] = item7;
+        }
+		{
+            Item memory item8 = Item(8, "General examination", 5, true);
+            _availableItems[8] = item8;
+        }
         
         for(uint i = 0; i < inCheckItems.length; i++) {
             Item foundItem = _availableItems[inCheckItems[i]];
