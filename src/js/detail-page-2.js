@@ -97,9 +97,9 @@ App = {
       console.log("clinicAcc = " + clinicAcc);
       console.log("patientAcc = " + patientAcc);
 
-      return instance.createContract(clinicAcc, patientAcc, [1,2]);
+      //return instance.createContract(clinicAcc, patientAcc, [1,2]);
       //return instance.createContract(clinicAcc, patientAcc, [1,2,3], {from: patientAcc});
-      //return instance.createContract("0xC5fdf4076b8F3A5357c5E395ab970B5B54098Fef", "0xf17f52151EbEF6C7334FAD080c5704D77216b732", ["1","2","3"]);
+      return instance.createContract("0xC5fdf4076b8F3A5357c5E395ab970B5B54098Fef","0xf17f52151EbEF6C7334FAD080c5704D77216b732",[1,2,3]);
     }).then(function(result) {
       console.log("createContract is called" + result);
     }).catch(function(err) {
