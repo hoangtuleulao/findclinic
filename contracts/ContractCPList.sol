@@ -19,20 +19,20 @@ contract ContractCPList {
      * @param inCheckItems list of items that Patient want to check
      */
     function createContract(address inClinic, address inPatient, uint[] inCheckItems) {
-        emit CreateContractEvent("1");
+        CreateContractEvent("1");
         require(msg.sender == inPatient);
 
-        emit CreateContractEvent("2");
+        CreateContractEvent("2");
         address pi = new ContractCP(inClinic, inPatient, inCheckItems);
         // Add to Patient contracts list
-        emit CreateContractEvent("3");
+        CreateContractEvent("3");
         address[] currentContractListOfPatient = _patientContractList[inPatient];
-        emit CreateContractEvent("4");
+        CreateContractEvent("4");
         currentContractListOfPatient.push(pi);
         // Add to Clinic contracts list
-        emit CreateContractEvent("5");
+        CreateContractEvent("5");
         address[] currentContractListOfClinic = _clinicContractList[inClinic];
-        emit CreateContractEvent("6");
+        CreateContractEvent("6");
         currentContractListOfClinic.push(pi);
     }
     

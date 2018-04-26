@@ -87,7 +87,6 @@ contract ContractPI {
     Item itemP12_8 = Item(8, "General examination", 50, true);
     
     function ContractPI(address inInusrer, address inPatient) {
-        require(msg.sender == inPatient);
         _insurer = inInusrer;
         _patient = inPatient;
         _status = Status.NEW;
@@ -172,7 +171,7 @@ contract ContractPI {
         _selectedOption = getOption(inPackId, inNumberOfMonths);
         _status = Status.VALID;
         
-        emit ContractSigned(msg.sender, inPackId, _contractValue);
+        ContractSigned(msg.sender, inPackId, _contractValue);
         
     }
     
@@ -218,7 +217,7 @@ contract ContractPI {
         uint totalAmount = calculateClaimAmount(cp.getPatient(), checkItems, checkPrices);
         if(totalAmount > 0) {
           _claimQueue[inContractCP] = ClaimRequest(inContractCP, _patient, false, totalAmount, true);
-          emit ClaimRequested(inContractCP, _patient, totalAmount);
+          ClaimRequested(inContractCP, _patient, totalAmount);
           return 0;
         }
         return 1;
@@ -236,7 +235,7 @@ contract ContractPI {
         cp.receive.gas(300000).value(request.amount)(request.amount);
         request.paid = true;
         
-        emit AcceptClaim(inContractCP, _patient, request.amount);
+        AcceptClaim(inContractCP, _patient, request.amount);
     }
     
     function requestForWithdraw() payable {

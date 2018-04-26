@@ -94,7 +94,7 @@ contract ContractCP {
         pays[0] = pi.requestForClaim(this);
         pays[1] = _totalFee - pays[0];
         
-        emit InformTotalFee(pays[0], pays[1]);
+        InformTotalFee(pays[0], pays[1]);
         
         return (pays[0], pays[1]);
     }
@@ -106,7 +106,7 @@ contract ContractCP {
         require(_patientPaid == false);
         require(msg.value >= _patientPaidAmount);
         _patientPaid = true;
-        emit PatientPaid(_patientPaidAmount);
+        PatientPaid(_patientPaidAmount);
         
         checkForPay();
     }
@@ -119,7 +119,7 @@ contract ContractCP {
         require(msg.sender == pi.getInsurer());
         require(msg.value >= _insurerPaidAmount);
         _insurerPaid = true;
-        emit InsurerPaid(_patientPaidAmount);
+        InsurerPaid(_patientPaidAmount);
         
         checkForPay();
     }
@@ -129,7 +129,7 @@ contract ContractCP {
         require(_insurerPaidAmount == 0 || _insurerPaid);
         require(_patientPaidAmount == 0 || _patientPaid);
         _status = Status.CHECKING;
-        emit ReadyToCheck();
+        ReadyToCheck();
     }
     
     function patientConfirm() payable {
