@@ -41,19 +41,28 @@ App = {
       // Set the provider for our contract
       App.contracts.ContractCPList.setProvider(App.web3Provider);
 
-      // Init patient management
-      return App.initPatientList();
-    });
+      // ------------------------------------------------------------------------------------
+      $.getJSON('ContractPIList.json', function(data) {
+        // Get the necessary contract artifact file and instantiate it with truffle-contract
+        var ContractPIListArtifact = data;
+        App.contracts.ContractPIList = TruffleContract(ContractPIListArtifact);
+      
+        // Set the provider for our contract
+        App.contracts.ContractPIList.setProvider(App.web3Provider);
 
-    $.getJSON('ContractCP.json', function(data) {
-      // Get the necessary contract artifact file and instantiate it with truffle-contract
-      var ContractCPArtifact = data;
-      App.contracts.ContractCP = TruffleContract(ContractCPArtifact);
+        // ------------------------------------------------------------------------------------
+        $.getJSON('ContractCP.json', function(data) {
+          // Get the necessary contract artifact file and instantiate it with truffle-contract
+          var ContractCPArtifact = data;
+          App.contracts.ContractCP = TruffleContract(ContractCPArtifact);
+        
+          // Set the provider for our contract
+          App.contracts.ContractCP.setProvider(App.web3Provider);
     
-      // Set the provider for our contract
-      App.contracts.ContractCP.setProvider(App.web3Provider);
-
-      return;
+          // Init patient management
+          return App.initPatientList();
+        });
+      });
     });
   },
 
@@ -83,15 +92,35 @@ App = {
     });
   },
 
+  renderPatientBox: function(address, reviewBox) {
+    reviewBox.find('.clinic_accept_patient').hide();
+    reviewBox.find('.rev-info').text(address);
+
+    reviewBox.show();
+    
+    // Get info of contractPI
+    App.contracts.ContractPIList.deployed().then(function(instance) {
+      return instance.getPatientContracts.call(patientAcc);
+    }).then(function(result) {
+      if(result.length > 0) {
+        // Render on GUI
+        reviewBox.find('.clinic_accept_patient_message').hide();
+        reviewBox.find('.clinic_accept_patient').attr('address', result[0]);
+        reviewBox.find('.clinic_accept_patient').show();
+      }
+    }).catch(function(err) {
+      console.log(err.message);
+    });
+  },
+
   renderPatientList: function() {
     if(currentContractUICount < patientContractAddresses.length) {
       $('.review-empty-message').hide();
       for (let i = currentContractUICount; i < patientContractAddresses.length; i++) {
         var address = patientContractAddresses[i];
         var reviewBox = $('.review-box').eq(i);
-        reviewBox.find('.rev-info').text(address);
-        reviewBox.find('.clinic_accept_patient').attr('address', address);
-        reviewBox.show();
+        App.renderPatientBox(address, reviewBox);
+
         currentContractUICount++;
       }
     }
@@ -104,8 +133,10 @@ App = {
   clinicAcceptPatient: function(event) {
     event.preventDefault();
 
-    App.contracts.ContractCPList.deployed().then(function(instance) {
-      return instance.createContract(clinicAcc, patientAcc, [1,2]);
+    var contractAddress = $(this).attr('address');
+
+    App.contracts.ContractCP.at(contractAddress).then(function(instance) {
+      return instance.clinicAcceptPatient(clinicAcc, patientAcc, [1,2]);
     }).then(function(result) {
       console.log("createContract is called" + result);
     }).catch(function(err) {
