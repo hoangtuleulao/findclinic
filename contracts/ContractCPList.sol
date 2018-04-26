@@ -17,13 +17,17 @@ contract ContractCPList {
      * @param inCheckItems list of items that Patient want to check
      */
     function createContract(address inClinic, address inPatient, uint[] inCheckItems) public {
-        address pi = new ContractCP(inClinic, inPatient, inCheckItems);
+        ContractCP pi = new ContractCP(inClinic, inPatient, inCheckItems);
+
+        address address_pi = address(pi);
+    
         // Add to Patient contracts list
         address[] storage currentContractListOfPatient = _patientContractList[inPatient];
-        currentContractListOfPatient.push(pi);
+        currentContractListOfPatient.push(address_pi);
+
         // Add to Clinic contracts list
         address[] storage currentContractListOfClinic = _clinicContractList[inClinic];
-        currentContractListOfClinic.push(pi);
+        currentContractListOfClinic.push(address_pi);
     }
     
     /**
