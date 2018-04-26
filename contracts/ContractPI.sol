@@ -13,6 +13,7 @@ contract ContractPI {
     enum Status {NEW, VALID, EXPIRED, CANCELLED}
     
     struct Item {
+        uint id;
         string name;
         uint percent;
         bool isValid;
@@ -48,17 +49,95 @@ contract ContractPI {
     mapping(uint => Option[]) _availableOptionsList;
     mapping(address => ClaimRequest) _claimQueue;
     
+    
+    Option optionG6 = Option(6, 20, true);
+    Item itemG6_1 = Item(1, "Fever", 100, true);
+    Item itemG6_2 = Item(2, "Flu", 100, true);
+    Item itemG6_3 = Item(3, "Backache", 80, true);
+    Item itemG6_4 = Item(4, "Stomach ache", 80, true);
+    Item itemG6_5 = Item(5, "Headache", 80, true);
+    Item itemG6_6 = Item(6, "Toothache", 50, true);
+    
+    Option optionG12 = Option(12, 30, true);
+    Item itemG12_1 = Item(1, "Fever", 100, true);
+    Item itemG12_2 = Item(2, "Flu", 100, true);
+    Item itemG12_3 = Item(3, "Backache", 80, true);
+    Item itemG12_4 = Item(4, "Stomach ache", 80, true);
+    Item itemG12_5 = Item(5, "Headache", 80, true);
+    Item itemG12_6 = Item(6, "Toothache", 50, true);
+    
+    Option optionP6 = Option(6, 30, true);
+    Item itemP6_1 = Item(1, "Fever", 100, true);
+    Item itemP6_2 = Item(2, "Flu", 100, true);
+    Item itemP6_3 = Item(3, "Backache", 100, true);
+    Item itemP6_4 = Item(4, "Stomach ache", 100, true);
+    Item itemP6_5 = Item(5, "Headache", 100, true);
+    Item itemP6_6 = Item(6, "Toothache", 80, true);
+    Item itemP6_7 = Item(7, "Cancer", 80, true);
+    Item itemP6_8 = Item(8, "General examination", 50, true);
+    
+    Option optionP12 = Option(12, 40, true);
+    Item itemP12_1 = Item(1, "Fever", 100, true);
+    Item itemP12_2 = Item(2, "Flu", 100, true);
+    Item itemP12_3 = Item(3, "Backache", 100, true);
+    Item itemP12_4 = Item(4, "Stomach ache", 100, true);
+    Item itemP12_5 = Item(5, "Headache", 100, true);
+    Item itemP12_6 = Item(6, "Toothache", 80, true);
+    Item itemP12_7 = Item(7, "Cancer", 80, true);
+    Item itemP12_8 = Item(8, "General examination", 50, true);
+    
     function ContractPI(address inInusrer, address inPatient) {
         require(msg.sender == inPatient);
         _insurer = inInusrer;
         _patient = inPatient;
         _status = Status.NEW;
         
+                // Option 1: General - 6 months
+        optionG6.items[1] = itemG6_1;
+        optionG6.items[2] = itemG6_2;
+        optionG6.items[3] = itemG6_3;
+		optionG6.items[4] = itemG6_4;
+		optionG6.items[5] = itemG6_5;
+		optionG6.items[6] = itemG6_6;
+		
+		// Option 1: General - 12 months
+        optionG12.items[1] = itemG12_1;
+        optionG12.items[2] = itemG12_2;
+        optionG12.items[3] = itemG12_3;
+		optionG12.items[4] = itemG12_4;
+		optionG12.items[5] = itemG12_5;
+		optionG12.items[6] = itemG12_6;
         
-        // TODO
-        // Init _availableOptionsList as avaiable service packs at Insurer
-        // Pack 1: 6 month, {Head, Stomache, ..} 50 ETH
-        // Pack 2: ...
+        Option[] generalOptions;
+        generalOptions.push(optionG6);
+		generalOptions.push(optionG12);
+        _availableOptionsList[1] = generalOptions;
+        
+        // Option 2: Premium - 6 months
+        optionP6.items[1] = itemP6_1;
+        optionP6.items[2] = itemP6_2;
+        optionP6.items[3] = itemP6_3;
+		optionP6.items[4] = itemP6_4;
+		optionP6.items[5] = itemP6_5;
+		optionP6.items[6] = itemP6_6;
+		optionP6.items[7] = itemP6_7;
+		optionP6.items[8] = itemP6_8;
+		
+		// Option 2: Premium - 12 months
+        optionP12.items[1] = itemP12_1;
+        optionP12.items[2] = itemP12_2;
+        optionP12.items[3] = itemP12_3;
+		optionP12.items[4] = itemP12_4;
+		optionP12.items[5] = itemP12_5;
+		optionP12.items[6] = itemP12_6;
+		optionP12.items[7] = itemP12_7;
+		optionP12.items[8] = itemP12_8;
+        
+        Option[] premiumOptions;
+        premiumOptions.push(optionP6);
+		premiumOptions.push(optionP12);
+        _availableOptionsList[2] = premiumOptions;
+        
     }
     
     function getOption(uint inPackId, uint inNumberOfMonths) internal returns (Option) {
