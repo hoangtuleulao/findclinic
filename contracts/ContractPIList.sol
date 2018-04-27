@@ -13,10 +13,11 @@ contract ContractPIList {
      * Create a ContractPI and save it to the list of contracts of Patient;
      * @param inInsurer address of Insurer account
      * @param inPatient address of Patient account
+     * @param inInsurerCategory address of Insurer Category contract
      */
-    function createContract(address inInsurer, address inPatient) {
+    function createContract(address inInsurer, address inPatient, address inInsurerCategory) {
         require(msg.sender == inPatient);
-        address pi = new ContractPI(inInsurer, inPatient);
+        address pi = new ContractPI(inInsurer, inPatient, inInsurerCategory);
         // Add to Patient contracts list
         address[] currentContractListOfPatient = _patientContractList[inPatient];
         currentContractListOfPatient.push(pi);

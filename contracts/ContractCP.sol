@@ -7,13 +7,6 @@ contract ContractCP {
     
     enum Status {NEW, WAITING_FOR_PAID, CHECKING, DONE, CANCELLED}
     
-    struct Item {
-        uint id;
-        string name;
-        uint price;
-        bool isValid;
-    }
-    
     address private _clinic;
     address private _patient;
     uint[] private _checkItems;
