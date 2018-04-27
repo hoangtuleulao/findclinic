@@ -16,14 +16,15 @@ contract ContractCPList {
      * Create a ContractCP and save it to the list of contracts of Patient;
      * @param inClinic address of Clinic account
      * @param inPatient address of Patient account
+     * @param inClinicCategory address of Clinic Cateogry Contract
      * @param inCheckItems list of items that Patient want to check
      */
-    function createContract(address inClinic, address inPatient, uint[] inCheckItems) {
+    function createContract(address inClinic, address inPatient, address inClinicCategory, uint[] inCheckItems) {
         CreateContractEvent("1");
         require(msg.sender == inPatient);
 
         CreateContractEvent("2");
-        address pi = new ContractCP(inClinic, inPatient, inCheckItems);
+        address pi = new ContractCP(inClinic, inPatient, inClinicCategory, inCheckItems);
         // Add to Patient contracts list
         CreateContractEvent("3");
         address[] currentContractListOfPatient = _patientContractList[inPatient];
