@@ -15,8 +15,6 @@ contract InsuranceCategory {
         mapping(uint => Item) items;
     }
     
-    address private _insurer;
-    
     mapping(uint => Option[]) _availableOptionsList;
     
     Option private _tempSelectedOption;
@@ -38,8 +36,10 @@ contract InsuranceCategory {
     Item itemP_4 = Item(4, 80);
     Item itemP_5 = Item(5, 80);
     Item itemP_6 = Item(6, 50);
+
+    address private _insurer;
     
-    function InsuranceCategory(address inInusrer, address inPatient) {
+    function InsuranceCategory(address inInusrer) {
         _insurer = inInusrer;
         
         // Option 1: General - 6 months
